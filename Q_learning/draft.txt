@@ -1,0 +1,44 @@
+state = env.reset() # e.g. 328
+while not done:
+	if 判断 explore or exploit
+	if explore:
+		得到action，随机取样的
+	if exploit：
+		得到action，从q_table[state]中取最好的结果（最大值）
+	
+	# next_state 假想的比较对象（假如我这么做，会怎么样怎么样...）
+	这里我们假设next_state = 499	
+	next_state = env.step(action)
+	
+	# 我们目前的state：328，配合上选出来的action，这个值是多少，
+	这里因为我们第一次进入这个while循环，所以我们假定选择了east往东走，
+	那么，old_value = q_table[328, 2] = -2.303
+	old_value = q_table[state, action]
+
+	# 假如我们进入了next_state：499，那么我们就会得到q_table[499]，
+	内含在next_state：499状态下所有action的值。我们需要找到最大的值，next_max。
+	这意味着，next_max所对应的action是我们在state：499中能选择的最好的reward
+	在图中，我们能看到，在state：499中，往西走，能得到最大的reward值，29
+	next_max = np.max(q_table[next_state])
+
+	# 计算new_value
+	new_value = (1 - alpha) * old_value + alpha * (reward + gamma * next_max)
+	# 对在：state328，且选择往east东走的时候，更新value的值
+	q_table[state, action] = new_value
+
+	# 如果reward等于-10，那么这就是一个惩罚性的
+	if reward == -10:
+		penalties += 1
+	
+	# 相当于我们从state:328进入了next_state:499中
+	state = next_state
+
+	epochs += 1
+
+
+
+目前state：499
+我们又进入了while循环，因为我们的出租车没有成功完成一次上下课
+此时，我们又需要选择explore或者exploit，得到某种action
+然后，我们调用env.step(action)，得到了next_state。我们可以这样说，这个next_state有可能
+是基于exploit而得到的，因为在exploit的情况下，action = np.argmax(q_table[state])
